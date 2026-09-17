@@ -40,11 +40,11 @@ The filter panel writes canonical state. The URL strip serializes only normalize
 
 | Query key | Role | Type after decode | Allowed format / boundary | Default | Degradation / fallback rule |
 |---|---|---|---|---|---|
-| `dest` | Canonical destination | `string` | Trimmed text, 1–100 chars | `"anywhere"` | Missing, blank, or over 100 chars → `"anywhere"`. |
+| `dest` | Canonical destination | `string` | Trimmed text, 1–100 chars | `"anywhere"` | Missing, blank, or over 100 chars → `"anywhere"`. `"anywhere"` is the explicit routable no-destination state, not an inferred city. |
 | `ss` | Legacy destination alias | `string` | Same as `dest` | — | Used when valid `dest` is absent. |
 | `city` | Legacy destination alias | `string` | Same as `dest` | — | Used after `dest` and `ss`. |
 | `destination` | Legacy destination alias | `string` | Same as `dest` | — | Used after `dest`, `ss`, and `city`. |
-| `checkin` | Canonical check-in | `string` | Real calendar date serialized as `YYYY-MM-DD` | `2025-01-01` | Invalid/missing → one day before a valid checkout when possible; otherwise `2025-01-01`. |
+| `checkin` | Canonical check-in | `string` | Real calendar date serialized as `YYYY-MM-DD` | `2025-01-01` | If check-in is invalid/missing but checkout parses to a real date, recover check-in as exactly **checkout - 1 calendar day**. Otherwise use `2025-01-01`. This is why `checkin=2024-13-45&checkout=2025-09-1` becomes `checkin=2025-08-31&checkout=2025-09-01`. |
 | `checkin_monthday` | Legacy check-in day | decoder-only | Integer day | — | Combined with legacy month/year only when all three form a real date. |
 | `checkin_month` | Legacy check-in month | decoder-only | Integer 1–12 | — | Combined with legacy day/year. |
 | `checkin_year` | Legacy check-in year | decoder-only | Four-digit year | — | Combined with legacy day/month. |
@@ -94,7 +94,7 @@ type SearchState = {
 };
 ```
 
-Normalization happens before serialization and before cache-key construction. Destination whitespace is trimmed and collapsed. Dates are serialized as `YYYY-MM-DD`. Numeric fields are integers inside their ranges.
+Normalization happens before serialization and before cache-key construction. Destination whitespace is trimmed and collapsed. Dates are serialized as `YYYY-MM-DD`. Numeric fields are integers inside their ranges. The `"anywhere"` destination default is deliberately part of canonical state so a link with no usable destination still has one deterministic, routable identity.
 
 ---
 
