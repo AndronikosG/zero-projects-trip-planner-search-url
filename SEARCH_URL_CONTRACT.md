@@ -1,13 +1,11 @@
 # Search URL Contract
 
-**Status:** Contract-first specification. This document must be committed before implementation of the shareable Search URL layer.
+**Status:** Contract-first specification. Implementation must follow this document.
 
 ## Goals
 
-1. **100% shared-link fidelity:** opening a valid or canonicalizable shared search link must reconstruct the same normalized search state and preserve the same result ordering as the sender.
-2. **Zero redundant search requests on repeat navigation:** revisiting a search whose normalized cache key is already present in the current session must issue **0** additional search endpoint requests.
-
-For repeat navigation this means a **100% cache-hit target** for an already-fetched normalized key and **0 ms of new network/search-endpoint latency**, because no new request is allowed to fire.
+1. **100% shared-link fidelity:** a shared search URL must rebuild one deterministic normalized search state and preserve the same result identity for the recipient.
+2. **Zero redundant search requests on repeat navigation:** revisiting an already-fetched normalized search in the current session must issue **0** additional search endpoint requests.
 
 ---
 
@@ -16,229 +14,163 @@ For repeat navigation this means a **100% cache-hit target** for an already-fetc
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │ FILTER PANEL — owns canonical search state                  │
-│                                                             │
-│ Destination                                                 │
-│ [ Lisbon                              ]  →  dest            │
-│                                                             │
-│ Check-in                  Check-out                          │
-│ [ 2024-09-20 ] → checkin  [ 2024-09-23 ] → checkout        │
-│                                                             │
-│ Maximum price / night                                       │
-│ [ 180                                 ]  →  maxprice        │
-│                                                             │
-│ [ Search ]                                                  │
+│ Destination [ Lisbon ]                         → dest        │
+│ Check-in [ 2025-02-06 ]                       → checkin     │
+│ Check-out [ 2025-02-09 ]                      → checkout    │
+│ Guests [ 2 ]                                  → guests      │
+│ Rooms [ 1 ]                                   → rooms       │
+│ Maximum price / night [ 180 ]                 → maxprice    │
 ├─────────────────────────────────────────────────────────────┤
 │ SHARED URL STRIP — owns canonical serialization             │
-│                                                             │
-│ /trip-planner?dest=lisbon&checkin=2024-09-20&               │
-│ checkout=2024-09-23&maxprice=180                            │
-│                                             [ Copy link ]    │
+│ ?dest=Lisbon&checkin=2025-02-06&checkout=2025-02-09&        │
+│ guests=2&rooms=1&maxprice=180                 [ Copy link ] │
 ├─────────────────────────────────────────────────────────────┤
 │ RESULTS LIST — owned by normalized TanStack Query key       │
-│                                                             │
-│ Lisbon Central Hotel                                        │
-│ €142/night · 8.7 rating · 1.3 km from centre               │
-│                                                             │
-│ Alfama Garden Rooms                                         │
-│ €118/night · 9.1 rating · 0.6 km from centre               │
-│                                                             │
-│ Riverside Apartment                                         │
-│ €176/night · 8.4 rating · 2.1 km from centre               │
+│ Lisbon Central Hotel · €142/night · 8.7                     │
+│ Alfama Garden Rooms · €118/night · 9.1                      │
+│ Riverside Apartment · €176/night · 8.4                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-The filter panel writes **canonical keys only**: `dest`, `checkin`, `checkout`, and `maxprice`. The shared URL strip serializes the normalized canonical state into the copyable link. The results list is owned by the normalized TanStack Query cache key, so reopening the same canonical search must preserve result fidelity and issue zero redundant search requests.
-
-Legacy keys are decoder-only compatibility aliases and are never written back into newly generated links.
+The filter panel writes canonical state. The URL strip serializes only normalized canonical values. The results list is fetched with a TanStack Query key derived from those same normalized values.
 
 ---
 
 ## Parameter contract
 
-| Query key | Role | Type after decode | Allowed format / validation boundary | Optional? | Default state | Degradation / fallback rule |
-|---|---|---|---|---|---|---|
-| `dest` | Canonical destination | `string \| undefined` | URL-decoded text, trimmed; must contain at least 1 non-whitespace character; max 100 characters | Required to execute search | `undefined` | Missing, blank-after-trim, or over 100 chars → `undefined`; do not execute search until a valid destination exists. |
-| `city` | Legacy alias for `dest` | `string \| undefined` | Same validation as `dest` | Legacy/optional | none | If canonical `dest` is absent or invalid and `city` is valid, use it as `dest`. Otherwise ignore it. Never keep `city` in canonical state or cache key. |
-| `destination` | Legacy alias for `dest` | `string \| undefined` | Same validation as `dest` | Legacy/optional | none | If both `dest` and `city` fail/are absent and `destination` is valid, use it as `dest`. Otherwise ignore it. Never keep it in canonical state or cache key. |
-| `checkin` | Canonical check-in date | `string \| undefined` | Strict `YYYY-MM-DD`; must represent a real calendar date | Required to execute search | `undefined` | Missing, empty, malformed, impossible, or non-ISO value → `undefined`; do not execute search until corrected. Never invent a replacement date. |
-| `checkout` | Canonical check-out date | `string \| undefined` | Strict `YYYY-MM-DD`; must represent a real calendar date and be strictly later than valid `checkin` | Required to execute search | `undefined` | Missing, empty, malformed, impossible, equal to `checkin`, or earlier than `checkin` → `undefined`; do not execute search until corrected. |
-| `maxprice` | Canonical nightly price cap | `number \| undefined` | Base-10 finite integer in range **1–1000** | Optional | `undefined` = no price cap | Missing or empty → `undefined`. Non-numeric/non-finite → `undefined`. Numeric values `<1` clamp to `1`; numeric values `>1000` clamp to `1000`. Never coerce an empty string to `0`. |
-| `budget` | Legacy alias for `maxprice` | `number \| undefined` | Same parsing and range rules as `maxprice` | Legacy/optional | none | If canonical `maxprice` is absent/invalid and `budget` can be parsed, use the normalized `budget` value as `maxprice`. Otherwise ignore it. Never keep `budget` in canonical state or cache key. |
+| Query key | Role | Type after decode | Allowed format / boundary | Default | Degradation / fallback rule |
+|---|---|---|---|---|---|
+| `dest` | Canonical destination | `string` | Trimmed text, 1–100 chars | `"anywhere"` | Missing, blank, or over 100 chars → `"anywhere"`. |
+| `ss` | Legacy destination alias | `string` | Same as `dest` | — | Used when valid `dest` is absent. |
+| `city` | Legacy destination alias | `string` | Same as `dest` | — | Used after `dest` and `ss`. |
+| `destination` | Legacy destination alias | `string` | Same as `dest` | — | Used after `dest`, `ss`, and `city`. |
+| `checkin` | Canonical check-in | `string` | Real calendar date serialized as `YYYY-MM-DD` | `2025-01-01` | Invalid/missing → one day before a valid checkout when possible; otherwise `2025-01-01`. |
+| `checkin_monthday` | Legacy check-in day | decoder-only | Integer day | — | Combined with legacy month/year only when all three form a real date. |
+| `checkin_month` | Legacy check-in month | decoder-only | Integer 1–12 | — | Combined with legacy day/year. |
+| `checkin_year` | Legacy check-in year | decoder-only | Four-digit year | — | Combined with legacy day/month. |
+| `checkout` | Canonical check-out | `string` | Real date, strictly later than check-in; serialized as `YYYY-MM-DD` | `checkin + 1 day` | Missing, invalid, equal to, or earlier than check-in → check-in + 1 day. A valid relaxed form such as `2025-09-1` is normalized to `2025-09-01`. |
+| `guests` | Canonical guest count | `number` | Integer 1–10 | `2` | Missing/non-numeric → `2`; <1 clamps to 1; >10 clamps to 10. |
+| `group_adults` | Legacy guests alias | `number` | Same as `guests` | — | Used when canonical `guests` is absent/invalid. |
+| `adults` | Legacy guests alias | `number` | Same as `guests` | — | Used after `guests` and `group_adults`. |
+| `rooms` | Canonical room count | `number` | Integer 1–5 | `1` | Missing/non-numeric → `1`; <1 clamps to 1; >5 clamps to 5. |
+| `no_rooms` | Legacy rooms alias | `number` | Same as `rooms` | — | Used when canonical `rooms` is absent/invalid. |
+| `maxprice` | Canonical nightly cap | `number \| undefined` | Integer 1–1000 | `undefined` = no cap | Missing/empty/non-numeric → `undefined`; numeric <1 clamps to 1; numeric >1000 clamps to 1000. |
+| `price_max` | Legacy price alias | `number \| undefined` | Same as `maxprice` | — | Used when canonical `maxprice` is absent/invalid. |
+| `maxPrice` | Legacy price alias | `number \| undefined` | Same as `maxprice` | — | Used after `maxprice` and `price_max`. |
+| `budget` | Legacy price alias | `number \| undefined` | Same as `maxprice` | — | Used after the other price aliases. |
 
-### Alias precedence
-
-Destination resolution is deterministic:
+Alias precedence is deterministic:
 
 ```text
-valid dest → valid city → valid destination → undefined
+destination: dest → ss → city → destination → "anywhere"
+check-in:    checkin → split legacy date → checkout - 1 day → 2025-01-01
+guests:      guests → group_adults → adults → 2
+rooms:       rooms → no_rooms → 1
+price:       maxprice → price_max → maxPrice → budget → undefined
 ```
 
-Price-cap resolution is deterministic:
-
-```text
-valid/normalizable maxprice → valid/normalizable budget → undefined
-```
-
-Canonical keys win when they are valid. Legacy aliases exist only to recover older shared links.
+Canonical keys are emitted by new links. Legacy names are decoder-only compatibility inputs.
 
 ---
 
 ## Unknown parameter rule
 
-Any query key outside the recognized set below is **dropped completely**:
+Any query key outside the recognized keys above is **dropped completely**. Examples from the capture log are `order`, `sortBy`, `offset`, `nflt`, `utm_source`, `label`, and `aid`.
 
-```text
-dest, city, destination, checkin, checkout, maxprice, budget
-```
-
-For example, `sort=cheapest` and `currency=GBP` are ignored. Unknown keys:
-
-- do not enter application search state;
-- do not participate in validation;
-- do not enter the TanStack Query key;
-- are not written back into a canonical shared URL;
-- must never invalidate an otherwise valid search.
+Unknown values do not enter search state, validation, canonical URLs, or TanStack Query keys.
 
 ---
 
-## Canonical normalized search state
-
-After alias resolution and validation, the URL decoder produces only this shape:
+## Normalized search state
 
 ```ts
-type NormalizedSearchState = {
-  dest: string | undefined;
-  checkin: string | undefined;
-  checkout: string | undefined;
-  maxprice: number | undefined;
+type SearchState = {
+  dest: string;
+  checkin: string;
+  checkout: string;
+  guests: number;
+  rooms: number;
+  maxprice?: number;
 };
 ```
 
-Normalization rules:
-
-1. `dest`: URL-decode, trim leading/trailing whitespace, collapse repeated internal whitespace to one space, then lowercase for identity/cache purposes.
-2. `checkin`: retain the validated ISO `YYYY-MM-DD` string exactly.
-3. `checkout`: retain the validated ISO `YYYY-MM-DD` string exactly.
-4. `maxprice`: parse once to a finite integer and apply the range rule above.
-5. Legacy aliases are removed after resolution.
-6. Unknown parameters are removed before state construction.
-
-A search request is enabled only when `dest`, `checkin`, and `checkout` are all valid. `maxprice` may be absent.
+Normalization happens before serialization and before cache-key construction. Destination whitespace is trimmed and collapsed. Dates are serialized as `YYYY-MM-DD`. Numeric fields are integers inside their ranges.
 
 ---
 
 ## Canonical URL serialization
 
-Newly generated/shared links use only canonical keys and a fixed parameter order:
+Canonical links use this exact order:
 
 ```text
-/trip-planner?dest=<dest>&checkin=<YYYY-MM-DD>&checkout=<YYYY-MM-DD>[&maxprice=<integer>]
+dest → checkin → checkout → guests → rooms → maxprice
 ```
 
-Serialization order is always:
+Example:
 
 ```text
-dest → checkin → checkout → maxprice
+?dest=Lisbon&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1&maxprice=180
 ```
 
-`maxprice` is omitted when its normalized value is `undefined`. Legacy aliases and unknown keys are never emitted.
+`maxprice` is omitted when undefined. Legacy and unknown keys are never emitted.
 
 ---
 
 ## TanStack Query cache-key contract
 
-The cache key is built **only from normalized canonical search state**, never from the raw URL string:
+The cache key is derived from normalized state, never the raw URL:
 
 ```ts
 [
   "accommodation-search",
-  normalized.dest,
+  normalized.dest.toLowerCase(),
   normalized.checkin,
   normalized.checkout,
+  normalized.guests,
+  normalized.rooms,
   normalized.maxprice ?? null,
 ]
 ```
 
-Exact ordering:
+Exact order:
 
 ```text
-namespace → dest → checkin → checkout → maxprice
+namespace → dest → checkin → checkout → guests → rooms → maxprice
 ```
 
-### Cache-key rules
-
-- Normalize aliases before constructing the key, so `city=vienna` and `dest=vienna` resolve to the same cache entry.
-- Normalize destination whitespace/case before constructing the key.
-- Use only validated ISO dates.
-- Use the normalized/clamped numeric `maxprice`; use `null` when no cap exists.
-- Exclude legacy key names and all unknown parameters.
-- Do not create/execute a search query when required normalized values are missing.
-
-Example equivalence:
-
-```text
-?city=Vienna&checkin=2024-08-01&checkout=2024-08-05&maxprice=130
-
-and
-
-?dest=vienna&checkin=2024-08-01&checkout=2024-08-05&maxprice=130
-```
-
-both produce:
-
-```ts
-["accommodation-search", "vienna", "2024-08-01", "2024-08-05", 130]
-```
+This means legacy and canonical links that normalize to the same state resolve to the same cache entry.
 
 ---
 
-## Degradation examples
+## Capture-log degradation examples
 
-| Incoming URL state | Normalized outcome |
-|---|---|
-| `city=vienna` with valid dates/price | `city` is translated to canonical `dest=vienna`. |
-| `destination=krakow` with valid dates/price | `destination` is translated to canonical `dest=krakow`. |
-| `budget=150` and no `maxprice` | `budget` is translated to canonical `maxprice=150`. |
-| `checkin=` | `checkin=undefined`; search is disabled until corrected. |
-| `checkin=2024-13-40` | `checkin=undefined`; search is disabled. |
-| `checkin=25-09-2024` | rejected as non-ISO; `checkin=undefined`; search is disabled. |
-| `checkout` missing | `checkout=undefined`; search is disabled. |
-| `checkout === checkin` | `checkout=undefined`; search is disabled. |
-| `checkout < checkin` | `checkout=undefined`; search is disabled. |
-| `dest=%20` | trims to blank → `dest=undefined`; search is disabled. |
-| `maxprice=` | `maxprice=undefined`; no price cap; never becomes `0`. |
-| `maxprice=abc` | `maxprice=undefined`; no price cap; page must not crash. |
-| `maxprice=-50` | normalized to `maxprice=1`. |
-| `maxprice=99999` | normalized to `maxprice=1000`. |
-| `sort=cheapest` | dropped completely. |
-| `currency=GBP` | dropped completely. |
+| Capture | Input issue | Normalized behavior |
+|---|---|---|
+| `SL-0107` | Valid values with historical `ss`, `group_adults`, `no_rooms` names | Values map directly into canonical state; unrelated keys are dropped. |
+| `SL-0104` | Split legacy check-in fields, `adults`, `price_max` | Split fields produce `2025-02-22`; checkout falls back to `2025-02-23`; aliases map to canonical fields. |
+| `SL-0112` | Missing checkout/rooms and `maxPrice=-50` | Checkout → `2025-08-03`; rooms → `1`; maxprice clamps to `1`. |
+| `SL-0180` | `maxPrice=9999999` | Maxprice clamps to `1000`. |
+| `SL-0142` | Impossible check-in, relaxed checkout, non-numeric adults | Checkout normalizes to `2025-09-01`; check-in → `2025-08-31`; guests → `2`. |
 
 ---
 
 ## Acceptance targets
 
 ### Shared-link fidelity
-
-**Target: 100%.**
-
-For every valid or recoverable legacy shared link, recipient navigation must decode to the same canonical search state as the sender. The same canonical state must identify the same cached/search result set and preserve result ordering.
+**Target: 100%.** A valid or recoverable shared link must decode to one deterministic normalized state, and encoding that state must produce one canonical link.
 
 ### Repeat-navigation caching
+**Target: 0 redundant search requests.** Revisiting an already-fetched normalized state in the current session must resolve from TanStack Query cache without a new endpoint request.
 
-**Target: 0 redundant search requests.**
-
-If a normalized search key has already been fetched and remains in the current client cache, navigating away and back to that exact normalized search must issue **0** additional search endpoint requests.
-
-Equivalent measurable target:
+Equivalent target:
 
 ```text
-repeat-navigation cache hit rate for an already-fetched key = 100%
+repeat-navigation cache hit rate = 100%
 new endpoint requests for that repeat = 0
-new network/search-endpoint latency for that repeat = 0 ms
 ```
 
 ---
 
 ## Implementation boundary
 
-This document is the contract. Implementation must follow it rather than redefining behavior in code. Any change to query names, alias precedence, validation, fallback behavior, URL serialization, cache-key shape, or acceptance targets requires updating this contract first.
+Schema, decoder, encoder, page URL state, tests, and cache-key construction must follow this contract. Changes to aliases, defaults, validation, serialization, or cache-key shape require updating this contract first.
