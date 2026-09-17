@@ -48,8 +48,10 @@ function generateResults(
   checkIn: string,
   checkOut: string,
   priceCapPerNight: number,
+  guests: number,
+  rooms: number,
 ): Accommodation[] {
-  const seedSource = `${destination}|${checkIn}|${checkOut}|${priceCapPerNight}`;
+  const seedSource = `${destination}|${checkIn}|${checkOut}|${priceCapPerNight}|${guests}|${rooms}`;
   const random = createRandom(hashString(seedSource));
   const nights = nightsBetween(checkIn, checkOut);
 
@@ -103,11 +105,19 @@ export async function GET(request: NextRequest) {
   const parsedPriceCap = Number(searchParams.get("priceCapPerNight"));
   const priceCapPerNight = Number.isFinite(parsedPriceCap) ? parsedPriceCap : 0;
 
+  const parsedGuests = Number(searchParams.get("guests"));
+  const guests = Number.isInteger(parsedGuests) && parsedGuests > 0 ? parsedGuests : 2;
+
+  const parsedRooms = Number(searchParams.get("rooms"));
+  const rooms = Number.isInteger(parsedRooms) && parsedRooms > 0 ? parsedRooms : 1;
+
   const results = generateResults(
     destination,
     checkIn,
     checkOut,
     priceCapPerNight,
+    guests,
+    rooms,
   );
 
   const payload = {
@@ -129,6 +139,8 @@ export async function GET(request: NextRequest) {
     checkIn,
     checkOut,
     priceCapPerNight,
+    guests,
+    rooms,
   });
 
   await new Promise((resolve) => setTimeout(resolve, 600));
