@@ -1,0 +1,68 @@
+> trip-planner@0.1.0 test
+> node --test tests/search-url.test.mjs
+
+TAP version 13
+# [SL-0107 clean]
+# input: dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1
+# parsed: {"dest":"Amsterdam","checkin":"2025-02-06","checkout":"2025-02-09","guests":2,"rooms":1}
+# canonical: dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1
+# cacheKey: ["accommodation-search","amsterdam","2025-02-06","2025-02-09",2,1,null]
+# [SL-0104 legacy names]
+# input: dest=Barcelona&checkin_monthday=22&checkin_month=2&checkin_year=2025&adults=3&rooms=1&price_max=180&sortBy=review_score_desc
+# parsed: {"dest":"Barcelona","checkin":"2025-02-22","checkout":"2025-02-23","guests":3,"rooms":1,"maxprice":180}
+# canonical: dest=Barcelona&checkin=2025-02-22&checkout=2025-02-23&guests=3&rooms=1&maxprice=180
+# cacheKey: ["accommodation-search","barcelona","2025-02-22","2025-02-23",3,1,180]
+# [SL-0128 missing fields]
+# input: aid=304142&label=gog235jc&utm_source=imessage
+# parsed: {"dest":"anywhere","checkin":"2025-01-01","checkout":"2025-01-02","guests":2,"rooms":1}
+# canonical: dest=anywhere&checkin=2025-01-01&checkout=2025-01-02&guests=2&rooms=1
+# cacheKey: ["accommodation-search","anywhere","2025-01-01","2025-01-02",2,1,null]
+# [SL-0180 clamped price]
+# input: ss=Palma&checkin=2025-06-14&checkout=2025-06-21&group_adults=4&no_rooms=2&maxPrice=9999999
+# parsed: {"dest":"Palma","checkin":"2025-06-14","checkout":"2025-06-21","guests":4,"rooms":2,"maxprice":1000}
+# canonical: dest=Palma&checkin=2025-06-14&checkout=2025-06-21&guests=4&rooms=2&maxprice=1000
+# cacheKey: ["accommodation-search","palma","2025-06-14","2025-06-21",4,2,1000]
+# [SL-0142 invalid date]
+# input: ss=Naples&checkin=2024-13-45&checkout=2025-09-1&adults=abc&nflt=zz_unknown_code%3D7
+# parsed: {"dest":"Naples","checkin":"2025-08-31","checkout":"2025-09-01","guests":2,"rooms":1}
+# canonical: dest=Naples&checkin=2025-08-31&checkout=2025-09-01&guests=2&rooms=1
+# cacheKey: ["accommodation-search","naples","2025-08-31","2025-09-01",2,1,null]
+# Subtest: SL-0107 clean values decode without modification
+ok 1 - SL-0107 clean values decode without modification
+  ---
+  duration_ms: 5.122505
+  type: 'test'
+  ...
+# Subtest: SL-0104 legacy names map into current schema fields
+ok 2 - SL-0104 legacy names map into current schema fields
+  ---
+  duration_ms: 1.07137
+  type: 'test'
+  ...
+# Subtest: SL-0128 missing search values use safe defaults
+ok 3 - SL-0128 missing search values use safe defaults
+  ---
+  duration_ms: 0.565983
+  type: 'test'
+  ...
+# Subtest: SL-0180 out-of-range price clamps to contract maximum
+ok 4 - SL-0180 out-of-range price clamps to contract maximum
+  ---
+  duration_ms: 0.417983
+  type: 'test'
+  ...
+# Subtest: SL-0142 invalid date recovers to a valid fallback date
+ok 5 - SL-0142 invalid date recovers to a valid fallback date
+  ---
+  duration_ms: 0.505054
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 140.379042
