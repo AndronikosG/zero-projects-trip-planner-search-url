@@ -15,7 +15,7 @@ For repeat navigation this means a **100% cache-hit target** for an already-fetc
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│ Search stays                                                │
+│ FILTER PANEL — owns canonical search state                  │
 │                                                             │
 │ Destination                                                 │
 │ [ Lisbon                              ]  →  dest            │
@@ -27,10 +27,29 @@ For repeat navigation this means a **100% cache-hit target** for an already-fetc
 │ [ 180                                 ]  →  maxprice        │
 │                                                             │
 │ [ Search ]                                                  │
+├─────────────────────────────────────────────────────────────┤
+│ SHARED URL STRIP — owns canonical serialization             │
+│                                                             │
+│ /trip-planner?dest=lisbon&checkin=2024-09-20&               │
+│ checkout=2024-09-23&maxprice=180                            │
+│                                             [ Copy link ]    │
+├─────────────────────────────────────────────────────────────┤
+│ RESULTS LIST — owned by normalized TanStack Query key       │
+│                                                             │
+│ Lisbon Central Hotel                                        │
+│ €142/night · 8.7 rating · 1.3 km from centre               │
+│                                                             │
+│ Alfama Garden Rooms                                         │
+│ €118/night · 9.1 rating · 0.6 km from centre               │
+│                                                             │
+│ Riverside Apartment                                         │
+│ €176/night · 8.4 rating · 2.1 km from centre               │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-The UI writes **canonical keys only**: `dest`, `checkin`, `checkout`, and `maxprice`. Legacy keys are decoder-only compatibility aliases and are never written back into newly generated links.
+The filter panel writes **canonical keys only**: `dest`, `checkin`, `checkout`, and `maxprice`. The shared URL strip serializes the normalized canonical state into the copyable link. The results list is owned by the normalized TanStack Query cache key, so reopening the same canonical search must preserve result fidelity and issue zero redundant search requests.
+
+Legacy keys are decoder-only compatibility aliases and are never written back into newly generated links.
 
 ---
 
