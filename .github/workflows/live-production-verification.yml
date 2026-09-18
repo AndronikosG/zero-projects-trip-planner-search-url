@@ -69,5 +69,6 @@ jobs:
             echo "No live evidence changes."
           else
             git commit -m "Add live Vercel production verification evidence"
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
