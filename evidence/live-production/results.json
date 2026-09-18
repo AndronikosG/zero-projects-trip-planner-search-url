@@ -1,0 +1,988 @@
+{
+  "liveURL": "https://zero-projects-trip-planner-search-url-andronikos-projects.vercel.app",
+  "generatedAt": "2026-09-18T00:55:03.747Z",
+  "rows": [
+    {
+      "group": "Shared-link state lost before the app",
+      "ticket": "SL-40218",
+      "sender": "/trip-planner?dest=lisbon&checkin=2024-06-12&checkout=2024-06-16&maxprice=140",
+      "complaint": "Chat app truncated the query string, so the recipient received no search state.",
+      "mode": "truncated-link",
+      "recipient": "/trip-planner",
+      "raw": {
+        "destination": "lisbon",
+        "checkin": "2024-06-12",
+        "checkout": "2024-06-16",
+        "price": "140",
+        "extras": ""
+      },
+      "expected": "Full sender URL works; externally truncated URL has no recoverable intent and falls back deterministically.",
+      "actual": "fullSender={\"destination\":\"lisbon\",\"checkin\":\"2024-06-12\",\"checkout\":\"2024-06-16\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"140\"}; truncatedRecipient={\"destination\":\"anywhere\",\"checkin\":\"2025-01-01\",\"checkout\":\"2025-01-02\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"\"}",
+      "requestCount": 2,
+      "verdict": "Boundary confirmed",
+      "screenshot": "evidence/live-production/sl-40218.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "lisbon",
+            "checkIn": "2024-06-12",
+            "checkOut": "2024-06-16",
+            "priceCapPerNight": "140",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "anywhere",
+            "checkIn": "2025-01-01",
+            "checkOut": "2025-01-02",
+            "priceCapPerNight": "1000",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Result-set fidelity mismatch",
+      "ticket": "SL-40255",
+      "sender": "/trip-planner?dest=barcelona&checkin=2024-05-20&checkout=2024-05-23&maxprice=110",
+      "complaint": "Same filters opened but recipient results differed and duplicate requests fired.",
+      "mode": "fidelity",
+      "raw": {
+        "destination": "barcelona",
+        "checkin": "2024-05-20",
+        "checkout": "2024-05-23",
+        "price": "110",
+        "extras": ""
+      },
+      "expected": "Clean recipient profile rebuilds identical controls and ordered result cards.",
+      "actual": "stateMatch=true; resultMatch=true; requests=1 sender + 1 recipient",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40255.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "barcelona",
+            "checkIn": "2024-05-20",
+            "checkOut": "2024-05-23",
+            "priceCapPerNight": "110",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "barcelona",
+            "checkIn": "2024-05-20",
+            "checkOut": "2024-05-23",
+            "priceCapPerNight": "110",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Redundant fetch on repeat navigation",
+      "ticket": "SL-40301",
+      "sender": "/trip-planner?dest=rome&checkin=2024-07-01&checkout=2024-07-08&maxprice=200",
+      "complaint": "Re-applying the same price state fired a fresh request.",
+      "mode": "repeat-price",
+      "altPrice": "190",
+      "raw": {
+        "destination": "rome",
+        "checkin": "2024-07-01",
+        "checkout": "2024-07-08",
+        "price": "200",
+        "extras": ""
+      },
+      "expected": "Returning to a previously fetched normalized state adds 0 requests.",
+      "actual": "newOnRepeat=0; sequenceTotal=2",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40301.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "rome",
+            "checkIn": "2024-07-01",
+            "checkOut": "2024-07-08",
+            "priceCapPerNight": "200",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "rome",
+            "checkIn": "2024-07-01",
+            "checkOut": "2024-07-08",
+            "priceCapPerNight": "190",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Invalid checkout relationship",
+      "ticket": "SL-40388",
+      "sender": "/trip-planner?dest=amsterdam&checkin=2024-06-30&checkout=2024-06-28&maxprice=160",
+      "complaint": "Checkout was earlier than check-in and results blanked.",
+      "mode": "cold",
+      "raw": {
+        "destination": "amsterdam",
+        "checkin": "2024-06-30",
+        "checkout": "2024-06-28",
+        "price": "160",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"amsterdam\",\"checkin\":\"2024-06-30\",\"checkout\":\"2024-07-01\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"160\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40388.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "amsterdam",
+            "checkIn": "2024-06-30",
+            "checkOut": "2024-07-01",
+            "priceCapPerNight": "160",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Price validation / bounds",
+      "ticket": "SL-40412",
+      "sender": "/trip-planner?dest=paris&checkin=2024-06-10&checkout=2024-06-14&maxprice=abc",
+      "complaint": "Non-numeric maxprice crashed the page.",
+      "mode": "cold",
+      "raw": {
+        "destination": "paris",
+        "checkin": "2024-06-10",
+        "checkout": "2024-06-14",
+        "price": "abc",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"paris\",\"checkin\":\"2024-06-10\",\"checkout\":\"2024-06-14\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40412.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "paris",
+            "checkIn": "2024-06-10",
+            "checkOut": "2024-06-14",
+            "priceCapPerNight": "1000",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Legacy parameter compatibility",
+      "ticket": "SL-40470",
+      "sender": "/trip-planner?city=vienna&checkin=2024-08-01&checkout=2024-08-05&maxprice=130",
+      "complaint": "Legacy city key was ignored.",
+      "mode": "cold",
+      "raw": {
+        "destination": "vienna",
+        "checkin": "2024-08-01",
+        "checkout": "2024-08-05",
+        "price": "130",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"vienna\",\"checkin\":\"2024-08-01\",\"checkout\":\"2024-08-05\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"130\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40470.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "vienna",
+            "checkIn": "2024-08-01",
+            "checkOut": "2024-08-05",
+            "priceCapPerNight": "130",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Legacy parameter compatibility",
+      "ticket": "SL-40533",
+      "sender": "/trip-planner?dest=prague&checkin=2024-09-02&checkout=2024-09-06&budget=150",
+      "complaint": "Legacy budget key was ignored.",
+      "mode": "cold",
+      "raw": {
+        "destination": "prague",
+        "checkin": "2024-09-02",
+        "checkout": "2024-09-06",
+        "price": "150",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"prague\",\"checkin\":\"2024-09-02\",\"checkout\":\"2024-09-06\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"150\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40533.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "prague",
+            "checkIn": "2024-09-02",
+            "checkOut": "2024-09-06",
+            "priceCapPerNight": "150",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Missing / malformed dates",
+      "ticket": "SL-40601",
+      "sender": "/trip-planner?dest=berlin&checkin=&checkout=2024-07-10&maxprice=120",
+      "complaint": "Empty check-in caused an endless spinner.",
+      "mode": "cold",
+      "raw": {
+        "destination": "berlin",
+        "checkin": "",
+        "checkout": "2024-07-10",
+        "price": "120",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"berlin\",\"checkin\":\"2024-07-09\",\"checkout\":\"2024-07-10\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"120\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40601.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "berlin",
+            "checkIn": "2024-07-09",
+            "checkOut": "2024-07-10",
+            "priceCapPerNight": "120",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Browser back state loss",
+      "ticket": "SL-40677",
+      "sender": "/trip-planner?dest=madrid&checkin=2024-06-05&checkout=2024-06-09&maxprice=95",
+      "complaint": "Browser Back reset filters and re-ran search.",
+      "mode": "back",
+      "altPrice": "105",
+      "raw": {
+        "destination": "madrid",
+        "checkin": "2024-06-05",
+        "checkout": "2024-06-09",
+        "price": "95",
+        "extras": ""
+      },
+      "expected": "Browser Back restores the prior controls and adds 0 requests.",
+      "actual": "restoredPrice=95; newOnBack=0; sequenceTotal=2",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40677.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "madrid",
+            "checkIn": "2024-06-05",
+            "checkOut": "2024-06-09",
+            "priceCapPerNight": "95",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "madrid",
+            "checkIn": "2024-06-05",
+            "checkOut": "2024-06-09",
+            "priceCapPerNight": "105",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Empty result handling",
+      "ticket": "SL-40742",
+      "sender": "/trip-planner?dest=oslo&checkin=2024-08-15&checkout=2024-08-18&maxprice=250",
+      "complaint": "Zero matching stays rendered a raw error instead of an empty state.",
+      "mode": "empty",
+      "raw": {
+        "destination": "oslo",
+        "checkin": "2024-08-15",
+        "checkout": "2024-08-18",
+        "price": "250",
+        "extras": ""
+      },
+      "expected": "Zero results render a clear empty state with one search request.",
+      "actual": "emptyState=true; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40742.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "oslo",
+            "checkIn": "2024-08-15",
+            "checkOut": "2024-08-18",
+            "priceCapPerNight": "250",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Redundant fetch on repeat navigation",
+      "ticket": "SL-40810",
+      "sender": "/trip-planner?dest=copenhagen&checkin=2024-07-20&checkout=2024-07-24&maxprice=180",
+      "complaint": "Price was toggled away and back, causing fresh searches.",
+      "mode": "repeat-price",
+      "altPrice": "190",
+      "raw": {
+        "destination": "copenhagen",
+        "checkin": "2024-07-20",
+        "checkout": "2024-07-24",
+        "price": "180",
+        "extras": ""
+      },
+      "expected": "Returning to a previously fetched normalized state adds 0 requests.",
+      "actual": "newOnRepeat=0; sequenceTotal=2",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40810.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "copenhagen",
+            "checkIn": "2024-07-20",
+            "checkOut": "2024-07-24",
+            "priceCapPerNight": "180",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "copenhagen",
+            "checkIn": "2024-07-20",
+            "checkOut": "2024-07-24",
+            "priceCapPerNight": "190",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Price validation / bounds",
+      "ticket": "SL-40889",
+      "sender": "/trip-planner?dest=dublin&checkin=2024-09-10&checkout=2024-09-13&maxprice=-50",
+      "complaint": "Negative maxprice returned no results without explanation.",
+      "mode": "cold",
+      "raw": {
+        "destination": "dublin",
+        "checkin": "2024-09-10",
+        "checkout": "2024-09-13",
+        "price": "-50",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"dublin\",\"checkin\":\"2024-09-10\",\"checkout\":\"2024-09-13\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"1\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40889.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "dublin",
+            "checkIn": "2024-09-10",
+            "checkOut": "2024-09-13",
+            "priceCapPerNight": "1",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Missing / malformed dates",
+      "ticket": "SL-40945",
+      "sender": "/trip-planner?dest=nice&checkin=2024-13-40&checkout=2024-07-05&maxprice=140",
+      "complaint": "Impossible check-in crashed date parsing.",
+      "mode": "cold",
+      "raw": {
+        "destination": "nice",
+        "checkin": "2024-13-40",
+        "checkout": "2024-07-05",
+        "price": "140",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"nice\",\"checkin\":\"2024-07-04\",\"checkout\":\"2024-07-05\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"140\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-40945.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "nice",
+            "checkIn": "2024-07-04",
+            "checkOut": "2024-07-05",
+            "priceCapPerNight": "140",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Unknown parameter isolation",
+      "ticket": "SL-41022",
+      "sender": "/trip-planner?dest=porto&checkin=2024-08-08&checkout=2024-08-12&maxprice=125&sort=cheapest",
+      "complaint": "Unknown sort param contaminated validation.",
+      "mode": "cold",
+      "raw": {
+        "destination": "porto",
+        "checkin": "2024-08-08",
+        "checkout": "2024-08-12",
+        "price": "125",
+        "extras": "sort=cheapest"
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"porto\",\"checkin\":\"2024-08-08\",\"checkout\":\"2024-08-12\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"125\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41022.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "porto",
+            "checkIn": "2024-08-08",
+            "checkOut": "2024-08-12",
+            "priceCapPerNight": "125",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Result-set fidelity mismatch",
+      "ticket": "SL-41090",
+      "sender": "/trip-planner?dest=milan&checkin=2024-09-01&checkout=2024-09-04&maxprice=170",
+      "complaint": "Recipient result set differed because cache identity did not use full search state.",
+      "mode": "fidelity",
+      "raw": {
+        "destination": "milan",
+        "checkin": "2024-09-01",
+        "checkout": "2024-09-04",
+        "price": "170",
+        "extras": ""
+      },
+      "expected": "Clean recipient profile rebuilds identical controls and ordered result cards.",
+      "actual": "stateMatch=true; resultMatch=true; requests=1 sender + 1 recipient",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41090.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "milan",
+            "checkIn": "2024-09-01",
+            "checkOut": "2024-09-04",
+            "priceCapPerNight": "170",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "milan",
+            "checkIn": "2024-09-01",
+            "checkOut": "2024-09-04",
+            "priceCapPerNight": "170",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Missing / malformed dates",
+      "ticket": "SL-41156",
+      "sender": "/trip-planner?dest=split&checkin=2024-08-22&maxprice=145",
+      "complaint": "Missing checkout left results loading forever.",
+      "mode": "cold",
+      "raw": {
+        "destination": "split",
+        "checkin": "2024-08-22",
+        "checkout": "",
+        "price": "145",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"split\",\"checkin\":\"2024-08-22\",\"checkout\":\"2024-08-23\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"145\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41156.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "split",
+            "checkIn": "2024-08-22",
+            "checkOut": "2024-08-23",
+            "priceCapPerNight": "145",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Price validation / bounds",
+      "ticket": "SL-41221",
+      "sender": "/trip-planner?dest=seville&checkin=2024-09-05&checkout=2024-09-08&maxprice=99999",
+      "complaint": "Price above the valid maximum bypassed the cap.",
+      "mode": "cold",
+      "raw": {
+        "destination": "seville",
+        "checkin": "2024-09-05",
+        "checkout": "2024-09-08",
+        "price": "99999",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"seville\",\"checkin\":\"2024-09-05\",\"checkout\":\"2024-09-08\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"1000\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41221.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "seville",
+            "checkIn": "2024-09-05",
+            "checkOut": "2024-09-08",
+            "priceCapPerNight": "1000",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Legacy parameter compatibility",
+      "ticket": "SL-41288",
+      "sender": "/trip-planner?destination=krakow&checkin=2024-08-30&checkout=2024-09-02&maxprice=115",
+      "complaint": "Verbose destination alias was ignored.",
+      "mode": "cold",
+      "raw": {
+        "destination": "krakow",
+        "checkin": "2024-08-30",
+        "checkout": "2024-09-02",
+        "price": "115",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"krakow\",\"checkin\":\"2024-08-30\",\"checkout\":\"2024-09-02\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"115\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41288.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "krakow",
+            "checkIn": "2024-08-30",
+            "checkOut": "2024-09-02",
+            "priceCapPerNight": "115",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Redundant fetch on repeat navigation",
+      "ticket": "SL-41355",
+      "sender": "/trip-planner?dest=hamburg&checkin=2024-09-12&checkout=2024-09-15&maxprice=155",
+      "complaint": "Clearing then restoring the same filter combination re-hit the API.",
+      "mode": "repeat-clear",
+      "raw": {
+        "destination": "hamburg",
+        "checkin": "2024-09-12",
+        "checkout": "2024-09-15",
+        "price": "155",
+        "extras": ""
+      },
+      "expected": "Restoring the original filter combination adds 0 requests.",
+      "actual": "newOnRepeat=0; sequenceTotal=2",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41355.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "hamburg",
+            "checkIn": "2024-09-12",
+            "checkOut": "2024-09-15",
+            "priceCapPerNight": "155",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "hamburg",
+            "checkIn": "2024-09-12",
+            "checkOut": "2024-09-15",
+            "priceCapPerNight": "1000",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Invalid checkout relationship",
+      "ticket": "SL-41419",
+      "sender": "/trip-planner?dest=venice&checkin=2024-08-25&checkout=2024-08-25&maxprice=210",
+      "complaint": "Same-day check-in/out produced no guidance.",
+      "mode": "cold",
+      "raw": {
+        "destination": "venice",
+        "checkin": "2024-08-25",
+        "checkout": "2024-08-25",
+        "price": "210",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"venice\",\"checkin\":\"2024-08-25\",\"checkout\":\"2024-08-26\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"210\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41419.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "venice",
+            "checkIn": "2024-08-25",
+            "checkOut": "2024-08-26",
+            "priceCapPerNight": "210",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Blank destination",
+      "ticket": "SL-41487",
+      "sender": "/trip-planner?dest=%20&checkin=2024-09-20&checkout=2024-09-23&maxprice=130",
+      "complaint": "Whitespace-only destination failed silently.",
+      "mode": "cold",
+      "raw": {
+        "destination": " ",
+        "checkin": "2024-09-20",
+        "checkout": "2024-09-23",
+        "price": "130",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"anywhere\",\"checkin\":\"2024-09-20\",\"checkout\":\"2024-09-23\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"130\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41487.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "anywhere",
+            "checkIn": "2024-09-20",
+            "checkOut": "2024-09-23",
+            "priceCapPerNight": "130",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Result-set fidelity mismatch",
+      "ticket": "SL-41552",
+      "sender": "/trip-planner?dest=zurich&checkin=2024-09-18&checkout=2024-09-21&maxprice=190",
+      "complaint": "Recipient list rendered in a different order.",
+      "mode": "fidelity",
+      "raw": {
+        "destination": "zurich",
+        "checkin": "2024-09-18",
+        "checkout": "2024-09-21",
+        "price": "190",
+        "extras": ""
+      },
+      "expected": "Clean recipient profile rebuilds identical controls and ordered result cards.",
+      "actual": "stateMatch=true; resultMatch=true; requests=1 sender + 1 recipient",
+      "requestCount": 2,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41552.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "zurich",
+            "checkIn": "2024-09-18",
+            "checkOut": "2024-09-21",
+            "priceCapPerNight": "190",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "zurich",
+            "checkIn": "2024-09-18",
+            "checkOut": "2024-09-21",
+            "priceCapPerNight": "190",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Redundant fetch on repeat navigation",
+      "ticket": "SL-41618",
+      "sender": "/trip-planner?dest=athens&checkin=2024-09-25&checkout=2024-09-29&maxprice=135",
+      "complaint": "Rapid toggling repeated requests for states already fetched.",
+      "mode": "rapid-repeat",
+      "raw": {
+        "destination": "athens",
+        "checkin": "2024-09-25",
+        "checkout": "2024-09-29",
+        "price": "135",
+        "extras": ""
+      },
+      "expected": "Only unique states 135, 145 and 155 hit the API; revisited 145 and 135 are cache-served.",
+      "actual": "observedRequests=3; uniqueExpected=3",
+      "requestCount": 3,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41618.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "athens",
+            "checkIn": "2024-09-25",
+            "checkOut": "2024-09-29",
+            "priceCapPerNight": "135",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "athens",
+            "checkIn": "2024-09-25",
+            "checkOut": "2024-09-29",
+            "priceCapPerNight": "145",
+            "guests": "2",
+            "rooms": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "athens",
+            "checkIn": "2024-09-25",
+            "checkOut": "2024-09-29",
+            "priceCapPerNight": "155",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Missing / malformed dates",
+      "ticket": "SL-41684",
+      "sender": "/trip-planner?dest=valencia&checkin=25-09-2024&checkout=28-09-2024&maxprice=105",
+      "complaint": "DD-MM-YYYY dates caused parsing failure.",
+      "mode": "cold",
+      "raw": {
+        "destination": "valencia",
+        "checkin": "25-09-2024",
+        "checkout": "28-09-2024",
+        "price": "105",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"valencia\",\"checkin\":\"2025-01-01\",\"checkout\":\"2025-01-02\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"105\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41684.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "valencia",
+            "checkIn": "2025-01-01",
+            "checkOut": "2025-01-02",
+            "priceCapPerNight": "105",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Unknown parameter isolation",
+      "ticket": "SL-41750",
+      "sender": "/trip-planner?dest=bruges&checkin=2024-09-28&checkout=2024-10-01&maxprice=120&currency=GBP",
+      "complaint": "Unknown currency param broke validation.",
+      "mode": "cold",
+      "raw": {
+        "destination": "bruges",
+        "checkin": "2024-09-28",
+        "checkout": "2024-10-01",
+        "price": "120",
+        "extras": "currency=GBP"
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"bruges\",\"checkin\":\"2024-09-28\",\"checkout\":\"2024-10-01\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"120\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41750.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "bruges",
+            "checkIn": "2024-09-28",
+            "checkOut": "2024-10-01",
+            "priceCapPerNight": "120",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Price validation / bounds",
+      "ticket": "SL-41815",
+      "sender": "/trip-planner?dest=faro&checkin=2024-10-05&checkout=2024-10-09&maxprice=",
+      "complaint": "Empty maxprice became zero and removed all results.",
+      "mode": "cold",
+      "raw": {
+        "destination": "faro",
+        "checkin": "2024-10-05",
+        "checkout": "2024-10-09",
+        "price": "",
+        "extras": ""
+      },
+      "expected": "Controls match the normalized Search URL contract and the page completes with one request.",
+      "actual": "controlsMatch=true; normalized={\"destination\":\"faro\",\"checkin\":\"2024-10-05\",\"checkout\":\"2024-10-09\",\"guests\":\"2\",\"rooms\":\"1\",\"maxprice\":\"\"}; requests=1",
+      "requestCount": 1,
+      "verdict": "Pass",
+      "screenshot": "evidence/live-production/sl-41815.png",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/search",
+          "query": {
+            "destination": "faro",
+            "checkIn": "2024-10-05",
+            "checkOut": "2024-10-09",
+            "priceCapPerNight": "1000",
+            "guests": "2",
+            "rooms": "1"
+          }
+        }
+      ]
+    }
+  ]
+}
