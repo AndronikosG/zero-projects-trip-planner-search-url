@@ -82,7 +82,7 @@ function SearchPageContent() {
     }
 
     const normalized = decodeSearchParams(nextParams);
-    router.replace(`/?${encodeSearchParams(normalized)}`, { scroll: false });
+    router.push(`/?${encodeSearchParams(normalized)}`, { scroll: false });
   }
 
   async function copyLink() {
