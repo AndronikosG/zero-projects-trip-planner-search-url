@@ -1,0 +1,72 @@
+name: Live production verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/live-production-verification.mjs"
+      - "evidence/escalation-cases.json"
+      - "app/**"
+      - "lib/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-live:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      LIVE_URL: https://zero-projects-trip-planner-search-url-andronikos-projects.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Confirm public deployment is reachable
+        shell: bash
+        run: |
+          READY=0
+          for i in {1..60}; do
+            STATUS=$(curl -L -s -o /tmp/live.html -w "%{http_code}" "$LIVE_URL/trip-planner?dest=lisbon&checkin=2024-06-12&checkout=2024-06-16&maxprice=140" || true)
+            if [ "$STATUS" = "200" ] && grep -q "Find your stay" /tmp/live.html; then
+              READY=1
+              break
+            fi
+            echo "attempt $i: status=$STATUS"
+            sleep 5
+          done
+          if [ "$READY" != "1" ]; then
+            echo "Public Vercel deployment did not become reachable."
+            cat /tmp/live.html || true
+            exit 1
+          fi
+
+      - name: Run real escalation matrix against Vercel
+        run: node scripts/live-production-verification.mjs
+
+      - name: Commit live production evidence
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add LIVE_PRODUCTION_VERIFICATION.md LIVE_PRODUCTION_URL.txt evidence/live-production
+          if git diff --cached --quiet; then
+            echo "No live evidence changes."
+          else
+            git commit -m "Add live Vercel production verification evidence"
+            git push origin HEAD:main
+          fi
