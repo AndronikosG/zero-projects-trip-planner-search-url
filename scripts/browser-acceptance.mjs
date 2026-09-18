@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const baseURL = process.env.BASE_URL ?? "http://127.0.0.1:3000";
+const baseURL = process.env.BASE_URL ?? "http://localhost:3000";
 const runLabel = process.env.EVIDENCE_RUN ?? "first-pass";
 const evidenceDir = path.join("evidence", "search-url", runLabel);
 await fs.mkdir(evidenceDir, { recursive: true });
