@@ -16,6 +16,14 @@ The first CI browser attempt timed out on the cold-load row. The page rendered t
 
 **Fix:** changed the browser base URL and readiness probe to `http://localhost:3000`, matching the Next.js dev origin.
 
+## Failure 3 — committed server.log came from the wrong process
+
+The previous final `server.log` was produced by a second `next dev` launch after the first acceptance server had not fully exited. That second launch only logged the lock/startup error, while the browser was still being served by the first process.
+
+**Cause:** the two acceptance passes started separate dev-server processes, so the file copied for the final pass was not guaranteed to belong to the process that actually handled the requests.
+
+**Fix:** both acceptance passes now run against one shared Next.js process. Its stdout is captured once to `acceptance-server.log`, copied into both evidence folders, and CI fails if that file does not contain `[accommodation-search]` route-handler lines.
+
 ## Re-run evidence
 
-`ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first complete browser pass after both fixes. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same matrix. Every row includes the exact `/api/search` request count and a screenshot.
+`ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first complete browser pass after the fixes. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same matrix. Every row includes the exact `/api/search` request count and a screenshot, and the committed `server.log` now contains the raw route-handler output from the process that actually served both runs.
