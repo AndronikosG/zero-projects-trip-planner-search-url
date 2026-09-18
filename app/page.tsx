@@ -221,7 +221,13 @@ function SearchPageContent() {
             </div>
           )}
 
-          {data && (
+          {data && data.results.length === 0 && (
+            <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600">
+              No stays found for this search.
+            </div>
+          )}
+
+          {data && data.results.length > 0 && (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {data.results.map((property) => (
                 <article
