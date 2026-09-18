@@ -1,0 +1,87 @@
+{
+  "runLabel": "first-pass",
+  "rows": [
+    {
+      "caseName": "Cold load from canonical URL",
+      "contract": "100% shared-link fidelity",
+      "action": "Opened a complete canonical search URL in a fresh browser context.",
+      "expected": "Controls and results rebuild from URL alone; 1 cold search request.",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/01-cold-load.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "Repeat filter combination",
+      "contract": "0 redundant search requests",
+      "action": "Changed max price 180 → 160 → 180 in one session.",
+      "expected": "Returning to the already-fetched 180 state adds 0 requests.",
+      "observedRequests": "0 new on repeat (2 total in sequence)",
+      "screenshot": "evidence/search-url/first-pass/02-repeat-filter-zero.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "Browser back to cached search",
+      "contract": "0 redundant search requests",
+      "action": "Loaded 180, changed to 160, then used browser Back.",
+      "expected": "URL/control state returns to 180 and adds 0 requests.",
+      "observedRequests": "0 new on back (2 total in sequence)",
+      "screenshot": "evidence/search-url/first-pass/03-browser-back.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "Pasted shared link in clean profile",
+      "contract": "100% shared-link fidelity",
+      "action": "Copied a populated Vienna URL and opened it in a new browser context.",
+      "expected": "Same controls and same ordered result cards as source; 1 cold request.",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/04-pasted-clean-profile.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "SL-0107 — Clean link",
+      "contract": "100% shared-link fidelity",
+      "action": "Opened capture-log query: `dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1`",
+      "expected": "Normalized state: `{\"dest\":\"Amsterdam\",\"checkin\":\"2025-02-06\",\"checkout\":\"2025-02-09\",\"guests\":2,\"rooms\":1}`",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/05-sl-0107-clean.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "SL-0104 — Legacy field names",
+      "contract": "100% shared-link fidelity",
+      "action": "Opened capture-log query: `dest=Barcelona&checkin_monthday=22&checkin_month=2&checkin_year=2025&adults=3&rooms=1&price_max=180&sortBy=review_score_desc`",
+      "expected": "Normalized state: `{\"dest\":\"Barcelona\",\"checkin\":\"2025-02-22\",\"checkout\":\"2025-02-23\",\"guests\":3,\"rooms\":1,\"maxprice\":\"180\"}`",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/06-sl-0104-legacy.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "SL-0128 — Missing key fields",
+      "contract": "100% shared-link fidelity",
+      "action": "Opened capture-log query: `aid=304142&label=gog235jc&utm_source=imessage`",
+      "expected": "Normalized state: `{\"dest\":\"anywhere\",\"checkin\":\"2025-01-01\",\"checkout\":\"2025-01-02\",\"guests\":2,\"rooms\":1}`",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/07-sl-0128-missing.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "SL-0180 — Out-of-range price",
+      "contract": "100% shared-link fidelity",
+      "action": "Opened capture-log query: `ss=Palma&checkin=2025-06-14&checkout=2025-06-21&group_adults=4&no_rooms=2&maxPrice=9999999`",
+      "expected": "Normalized state: `{\"dest\":\"Palma\",\"checkin\":\"2025-06-14\",\"checkout\":\"2025-06-21\",\"guests\":4,\"rooms\":2,\"maxprice\":\"1000\"}`",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/08-sl-0180-clamped-price.png",
+      "result": "Pass"
+    },
+    {
+      "caseName": "SL-0142 — Invalid date recovery",
+      "contract": "100% shared-link fidelity",
+      "action": "Opened capture-log query: `ss=Naples&checkin=2024-13-45&checkout=2025-09-1&adults=abc&nflt=zz_unknown_code%3D7`",
+      "expected": "Normalized state: `{\"dest\":\"Naples\",\"checkin\":\"2025-08-31\",\"checkout\":\"2025-09-01\",\"guests\":2,\"rooms\":1}`",
+      "observedRequests": "1 total",
+      "screenshot": "evidence/search-url/first-pass/09-sl-0142-invalid-date.png",
+      "result": "Pass"
+    }
+  ],
+  "failures": []
+}
