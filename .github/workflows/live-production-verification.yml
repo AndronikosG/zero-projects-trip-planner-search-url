@@ -8,6 +8,7 @@ on:
       - "evidence/escalation-cases.json"
       - "app/**"
       - "lib/**"
+      - ".github/workflows/live-production-verification.yml"
   workflow_dispatch:
 
 permissions:
@@ -40,9 +41,9 @@ jobs:
         shell: bash
         run: |
           READY=0
-          for i in {1..60}; do
-            STATUS=$(curl -L -s -o /tmp/live.html -w "%{http_code}" "$LIVE_URL/trip-planner?dest=lisbon&checkin=2024-06-12&checkout=2024-06-16&maxprice=140" || true)
-            if [ "$STATUS" = "200" ] && grep -q "Find your stay" /tmp/live.html; then
+          for i in {1..12}; do
+            STATUS=$(curl -L -s -o /tmp/live.json -w "%{http_code}" "$LIVE_URL/api/search?destination=lisbon&checkIn=2024-06-12&checkOut=2024-06-16&priceCapPerNight=140&guests=2&rooms=1" || true)
+            if [ "$STATUS" = "200" ] && grep -q '"destination":"lisbon"' /tmp/live.json; then
               READY=1
               break
             fi
@@ -50,8 +51,8 @@ jobs:
             sleep 5
           done
           if [ "$READY" != "1" ]; then
-            echo "Public Vercel deployment did not become reachable."
-            cat /tmp/live.html || true
+            echo "Public Vercel API did not become reachable."
+            cat /tmp/live.json || true
             exit 1
           fi
 
