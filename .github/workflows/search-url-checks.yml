@@ -5,11 +5,17 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   test:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -18,3 +24,73 @@ jobs:
       - run: npm test
       - run: node scripts/runtime-cache-evidence.mjs
       - run: npm run build
+
+      - name: Install Playwright for acceptance run
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run browser acceptance — first pass
+        shell: bash
+        run: |
+          npm run dev > first-pass-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then break; fi
+            sleep 1
+          done
+          EVIDENCE_RUN=first-pass node scripts/browser-acceptance.mjs
+          cp first-pass-server.log evidence/search-url/first-pass/server.log
+          kill $SERVER_PID || true
+          wait $SERVER_PID 2>/dev/null || true
+          trap - EXIT
+
+      - name: Run browser acceptance — final rerun
+        shell: bash
+        run: |
+          npm run dev > final-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then break; fi
+            sleep 1
+          done
+          EVIDENCE_RUN=final node scripts/browser-acceptance.mjs
+          cp final-server.log evidence/search-url/final/server.log
+          kill $SERVER_PID || true
+          wait $SERVER_PID 2>/dev/null || true
+          trap - EXIT
+
+      - name: Add failure/re-run note
+        shell: bash
+        run: |
+          cat > ACCEPTANCE_FAILURES_AND_RERUNS.md <<'EOF'
+          # Acceptance failures and re-runs
+
+          ## Failure found before the browser acceptance run
+
+          Browser-history review found that filter edits used `router.replace`. That updated the query string without reload, but it replaced the current history entry, so browser Back could not reliably restore the previous search state.
+
+          **Cause:** URL state changes were being written with replacement navigation instead of adding history entries.
+
+          **Fix:** changed filter updates to `router.push(..., { scroll: false })`. The URL still updates without a page reload, but each committed filter state can now be restored with browser Back.
+
+          ## Re-run evidence
+
+          `ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first automated browser pass after the fix. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same acceptance matrix. Both runs include exact `/api/search` request counts and screenshots.
+          EOF
+
+      - name: Commit acceptance record and screenshots
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ACCEPTANCE_EVIDENCE.md ACCEPTANCE_EVIDENCE_FIRST_PASS.md ACCEPTANCE_FAILURES_AND_RERUNS.md evidence/search-url
+          if git diff --cached --quiet; then
+            echo "No acceptance evidence changes to commit."
+          else
+            git commit -m "Add final shareable search acceptance evidence"
+            git push origin HEAD:main
+          fi
