@@ -41,7 +41,7 @@ function watch(page, requests) {
 
 async function waitSettled(page) {
   await page.waitForLoadState("domcontentloaded");
-  await page.locator("article, text=No stays found for this search., text=Search failed.").first().waitFor({state:"visible", timeout:25000});
+  await page.waitForFunction(() => Boolean(document.querySelector("article")) || document.body.textContent?.includes("No stays found for this search.") || document.body.textContent?.includes("Search failed."), undefined, { timeout: 25000 });
   await page.waitForTimeout(200);
 }
 
