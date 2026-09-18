@@ -1,3 +1,4 @@
+// Production sign-off runner: execute only against the public Vercel URL.
 import { chromium } from "playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
