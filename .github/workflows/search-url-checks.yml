@@ -37,7 +37,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000 >/dev/null; then break; fi
+            if curl -fsS http://localhost:3000 >/dev/null; then break; fi
             sleep 1
           done
           set +e
@@ -61,7 +61,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000 >/dev/null; then break; fi
+            if curl -fsS http://localhost:3000 >/dev/null; then break; fi
             sleep 1
           done
           EVIDENCE_RUN=final node scripts/browser-acceptance.mjs
@@ -76,17 +76,25 @@ jobs:
           cat > ACCEPTANCE_FAILURES_AND_RERUNS.md <<'EOF'
           # Acceptance failures and re-runs
 
-          ## Failure found before the browser acceptance run
+          ## Failure 1 — browser Back would not have a previous filter entry
 
-          Browser-history review found that filter edits used `router.replace`. That updated the query string without reload, but it replaced the current history entry, so browser Back could not reliably restore the previous search state.
+          Before the acceptance run, browser-history review found that filter edits used `router.replace`. That updated the URL without reload, but replaced the current history entry.
 
-          **Cause:** URL state changes were being written with replacement navigation instead of adding history entries.
+          **Cause:** filter state changes used replacement navigation.
 
-          **Fix:** changed filter updates to `router.push(..., { scroll: false })`. The URL still updates without a page reload, but each committed filter state can now be restored with browser Back.
+          **Fix:** changed filter updates to `router.push(..., { scroll: false })`, so browser Back can restore the previous normalized search state while still avoiding a full reload.
+
+          ## Failure 2 — first automated browser run never reached results
+
+          The first CI browser attempt timed out on the cold-load row. The page rendered the controls and URL strip but stayed on `Loading accommodation…`. The server log showed Next.js blocking development resources because the harness opened `127.0.0.1` while the dev server was serving `localhost`.
+
+          **Cause:** acceptance-harness origin mismatch, not search URL logic.
+
+          **Fix:** changed the browser base URL and readiness probe to `http://localhost:3000`, matching the Next.js dev origin.
 
           ## Re-run evidence
 
-          `ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first automated browser pass after the fix. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same acceptance matrix. Both runs include exact `/api/search` request counts and screenshots.
+          `ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first complete browser pass after both fixes. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same matrix. Every row includes the exact `/api/search` request count and a screenshot.
           EOF
 
       - name: Commit acceptance record and screenshots
