@@ -4,8 +4,8 @@
 
 ▲ Next.js 16.3.5 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://10.1.0.157:3000
-✓ Ready in 392ms
+- Network:       http://10.1.0.73:3000
+✓ Ready in 379ms
 ✓ Running next.config.ts took 34ms
 Attention: Next.js now collects completely anonymous telemetry regarding usage.
 This information is used to shape Next.js' roadmap and prioritize features.
@@ -13,10 +13,10 @@ You can learn more, including how to opt-out if you'd not like to participate in
 https://nextjs.org/telemetry
 
 
- GET / 200 in 2.4s (next.js: 2.2s, application-code: 228ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 45ms (next.js: 9ms, application-code: 36ms)
+ GET / 200 in 2.4s (next.js: 2.1s, application-code: 224ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 40ms (next.js: 5ms, application-code: 34ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:11.843Z',
+  timestamp: '2026-09-18T00:52:24.006Z',
   destination: 'Lisbon',
   checkIn: '2025-10-10',
   checkOut: '2025-10-13',
@@ -24,10 +24,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 966ms (next.js: 339ms, application-code: 627ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 36ms (next.js: 3ms, application-code: 32ms)
+ GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 907ms (next.js: 281ms, application-code: 626ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 35ms (next.js: 3ms, application-code: 32ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:13.268Z',
+  timestamp: '2026-09-18T00:52:25.506Z',
   destination: 'Lisbon',
   checkIn: '2025-10-10',
   checkOut: '2025-10-13',
@@ -36,9 +36,9 @@ https://nextjs.org/telemetry
   rooms: 1
 }
  GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 608ms (next.js: 3ms, application-code: 605ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=160 200 in 18ms (next.js: 3ms, application-code: 15ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=160 200 in 17ms (next.js: 3ms, application-code: 14ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:14.074Z',
+  timestamp: '2026-09-18T00:52:26.311Z',
   destination: 'Lisbon',
   checkIn: '2025-10-10',
   checkOut: '2025-10-13',
@@ -46,11 +46,11 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=160&guests=2&rooms=1 200 in 608ms (next.js: 3ms, application-code: 605ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 17ms (next.js: 3ms, application-code: 13ms)
- GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=180 200 in 31ms (next.js: 4ms, application-code: 27ms)
+ GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=160&guests=2&rooms=1 200 in 609ms (next.js: 3ms, application-code: 606ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 16ms (next.js: 3ms, application-code: 13ms)
+ GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=180 200 in 30ms (next.js: 3ms, application-code: 27ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:16.188Z',
+  timestamp: '2026-09-18T00:52:28.419Z',
   destination: 'Porto',
   checkIn: '2025-11-04',
   checkOut: '2025-11-08',
@@ -58,10 +58,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=180&guests=2&rooms=1 200 in 607ms (next.js: 3ms, application-code: 604ms)
- GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=160 200 in 19ms (next.js: 3ms, application-code: 16ms)
+ GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=180&guests=2&rooms=1 200 in 608ms (next.js: 3ms, application-code: 605ms)
+ GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=160 200 in 18ms (next.js: 3ms, application-code: 16ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:16.993Z',
+  timestamp: '2026-09-18T00:52:29.221Z',
   destination: 'Porto',
   checkIn: '2025-11-04',
   checkOut: '2025-11-08',
@@ -69,10 +69,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=160&guests=2&rooms=1 200 in 608ms (next.js: 2ms, application-code: 606ms)
- GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 30ms (next.js: 2ms, application-code: 28ms)
+ GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=160&guests=2&rooms=1 200 in 607ms (next.js: 2ms, application-code: 605ms)
+ GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 28ms (next.js: 2ms, application-code: 25ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:19.182Z',
+  timestamp: '2026-09-18T00:52:31.390Z',
   destination: 'Vienna',
   checkIn: '2025-12-02',
   checkOut: '2025-12-06',
@@ -80,10 +80,10 @@ https://nextjs.org/telemetry
   guests: 3,
   rooms: 2
 }
- GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 608ms (next.js: 2ms, application-code: 606ms)
- GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 50ms (next.js: 3ms, application-code: 47ms)
+ GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 609ms (next.js: 1.8ms, application-code: 607ms)
+ GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 45ms (next.js: 2ms, application-code: 43ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:20.403Z',
+  timestamp: '2026-09-18T00:52:32.606Z',
   destination: 'Vienna',
   checkIn: '2025-12-02',
   checkOut: '2025-12-06',
@@ -91,10 +91,10 @@ https://nextjs.org/telemetry
   guests: 3,
   rooms: 2
 }
- GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 608ms (next.js: 2ms, application-code: 606ms)
- GET /?dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1 200 in 30ms (next.js: 3ms, application-code: 27ms)
+ GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 607ms (next.js: 2ms, application-code: 605ms)
+ GET /?dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1 200 in 31ms (next.js: 2ms, application-code: 28ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:21.721Z',
+  timestamp: '2026-09-18T00:52:33.901Z',
   destination: 'Amsterdam',
   checkIn: '2025-02-06',
   checkOut: '2025-02-09',
@@ -102,10 +102,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Amsterdam&checkIn=2025-02-06&checkOut=2025-02-09&priceCapPerNight=1000&guests=2&rooms=1 200 in 608ms (next.js: 3ms, application-code: 605ms)
- GET /?dest=Barcelona&checkin_monthday=22&checkin_month=2&checkin_year=2025&adults=3&rooms=1&price_max=180&sortBy=review_score_desc 200 in 30ms (next.js: 2ms, application-code: 27ms)
+ GET /api/search?destination=Amsterdam&checkIn=2025-02-06&checkOut=2025-02-09&priceCapPerNight=1000&guests=2&rooms=1 200 in 608ms (next.js: 2ms, application-code: 606ms)
+ GET /?dest=Barcelona&checkin_monthday=22&checkin_month=2&checkin_year=2025&adults=3&rooms=1&price_max=180&sortBy=review_score_desc 200 in 31ms (next.js: 2.0ms, application-code: 29ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:22.958Z',
+  timestamp: '2026-09-18T00:52:35.138Z',
   destination: 'Barcelona',
   checkIn: '2025-02-22',
   checkOut: '2025-02-23',
@@ -114,9 +114,9 @@ https://nextjs.org/telemetry
   rooms: 1
 }
  GET /api/search?destination=Barcelona&checkIn=2025-02-22&checkOut=2025-02-23&priceCapPerNight=180&guests=3&rooms=1 200 in 609ms (next.js: 3ms, application-code: 606ms)
- GET /?aid=304142&label=gog235jc&utm_source=imessage 200 in 60ms (next.js: 2ms, application-code: 58ms)
+ GET /?aid=304142&label=gog235jc&utm_source=imessage 200 in 51ms (next.js: 2ms, application-code: 49ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:24.230Z',
+  timestamp: '2026-09-18T00:52:36.390Z',
   destination: 'anywhere',
   checkIn: '2025-01-01',
   checkOut: '2025-01-02',
@@ -125,9 +125,9 @@ https://nextjs.org/telemetry
   rooms: 1
 }
  GET /api/search?destination=anywhere&checkIn=2025-01-01&checkOut=2025-01-02&priceCapPerNight=1000&guests=2&rooms=1 200 in 609ms (next.js: 3ms, application-code: 606ms)
- GET /?ss=Palma&checkin=2025-06-14&checkout=2025-06-21&group_adults=4&no_rooms=2&maxPrice=9999999 200 in 27ms (next.js: 1.8ms, application-code: 25ms)
+ GET /?ss=Palma&checkin=2025-06-14&checkout=2025-06-21&group_adults=4&no_rooms=2&maxPrice=9999999 200 in 27ms (next.js: 2ms, application-code: 25ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:25.528Z',
+  timestamp: '2026-09-18T00:52:37.625Z',
   destination: 'Palma',
   checkIn: '2025-06-14',
   checkOut: '2025-06-21',
@@ -135,10 +135,10 @@ https://nextjs.org/telemetry
   guests: 4,
   rooms: 2
 }
- GET /api/search?destination=Palma&checkIn=2025-06-14&checkOut=2025-06-21&priceCapPerNight=1000&guests=4&rooms=2 200 in 608ms (next.js: 2ms, application-code: 605ms)
- GET /?ss=Naples&checkin=2024-13-45&checkout=2025-09-1&adults=abc&nflt=zz_unknown_code%3D7 200 in 28ms (next.js: 2ms, application-code: 26ms)
+ GET /api/search?destination=Palma&checkIn=2025-06-14&checkOut=2025-06-21&priceCapPerNight=1000&guests=4&rooms=2 200 in 607ms (next.js: 2ms, application-code: 605ms)
+ GET /?ss=Naples&checkin=2024-13-45&checkout=2025-09-1&adults=abc&nflt=zz_unknown_code%3D7 200 in 31ms (next.js: 3ms, application-code: 29ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:26.792Z',
+  timestamp: '2026-09-18T00:52:38.861Z',
   destination: 'Naples',
   checkIn: '2025-08-31',
   checkOut: '2025-09-01',
@@ -147,9 +147,9 @@ https://nextjs.org/telemetry
   rooms: 1
 }
  GET /api/search?destination=Naples&checkIn=2025-08-31&checkOut=2025-09-01&priceCapPerNight=1000&guests=2&rooms=1 200 in 607ms (next.js: 2ms, application-code: 605ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 31ms (next.js: 2ms, application-code: 29ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 25ms (next.js: 1.8ms, application-code: 24ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:28.654Z',
+  timestamp: '2026-09-18T00:52:40.716Z',
   destination: 'Lisbon',
   checkIn: '2025-10-10',
   checkOut: '2025-10-13',
@@ -157,10 +157,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 607ms (next.js: 3ms, application-code: 604ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 28ms (next.js: 3ms, application-code: 25ms)
+ GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 608ms (next.js: 3ms, application-code: 605ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 27ms (next.js: 1.8ms, application-code: 25ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:29.891Z',
+  timestamp: '2026-09-18T00:52:41.955Z',
   destination: 'Lisbon',
   checkIn: '2025-10-10',
   checkOut: '2025-10-13',
@@ -168,10 +168,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 607ms (next.js: 3ms, application-code: 605ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=160 200 in 13ms (next.js: 3ms, application-code: 10ms)
+ GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=180&guests=2&rooms=1 200 in 606ms (next.js: 2ms, application-code: 604ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=160 200 in 15ms (next.js: 2ms, application-code: 13ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:30.695Z',
+  timestamp: '2026-09-18T00:52:42.750Z',
   destination: 'Lisbon',
   checkIn: '2025-10-10',
   checkOut: '2025-10-13',
@@ -179,11 +179,11 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=160&guests=2&rooms=1 200 in 607ms (next.js: 3ms, application-code: 604ms)
- GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 14ms (next.js: 2ms, application-code: 11ms)
- GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=180 200 in 27ms (next.js: 2ms, application-code: 25ms)
+ GET /api/search?destination=Lisbon&checkIn=2025-10-10&checkOut=2025-10-13&priceCapPerNight=160&guests=2&rooms=1 200 in 605ms (next.js: 1.7ms, application-code: 604ms)
+ GET /?dest=Lisbon&checkin=2025-10-10&checkout=2025-10-13&guests=2&rooms=1&maxprice=180 200 in 13ms (next.js: 2ms, application-code: 11ms)
+ GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=180 200 in 27ms (next.js: 1.9ms, application-code: 25ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:32.786Z',
+  timestamp: '2026-09-18T00:52:44.855Z',
   destination: 'Porto',
   checkIn: '2025-11-04',
   checkOut: '2025-11-08',
@@ -194,7 +194,7 @@ https://nextjs.org/telemetry
  GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=180&guests=2&rooms=1 200 in 606ms (next.js: 1.9ms, application-code: 604ms)
  GET /?dest=Porto&checkin=2025-11-04&checkout=2025-11-08&guests=2&rooms=1&maxprice=160 200 in 13ms (next.js: 2ms, application-code: 11ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:33.585Z',
+  timestamp: '2026-09-18T00:52:45.648Z',
   destination: 'Porto',
   checkIn: '2025-11-04',
   checkOut: '2025-11-08',
@@ -202,10 +202,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=160&guests=2&rooms=1 200 in 605ms (next.js: 1.9ms, application-code: 603ms)
- GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 35ms (next.js: 3ms, application-code: 32ms)
+ GET /api/search?destination=Porto&checkIn=2025-11-04&checkOut=2025-11-08&priceCapPerNight=160&guests=2&rooms=1 200 in 605ms (next.js: 2.0ms, application-code: 603ms)
+ GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 29ms (next.js: 2ms, application-code: 26ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:35.804Z',
+  timestamp: '2026-09-18T00:52:47.848Z',
   destination: 'Vienna',
   checkIn: '2025-12-02',
   checkOut: '2025-12-06',
@@ -213,10 +213,10 @@ https://nextjs.org/telemetry
   guests: 3,
   rooms: 2
 }
- GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 607ms (next.js: 3ms, application-code: 604ms)
- GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 30ms (next.js: 2ms, application-code: 28ms)
+ GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 606ms (next.js: 2ms, application-code: 604ms)
+ GET /?dest=Vienna&checkin=2025-12-02&checkout=2025-12-06&guests=3&rooms=2&maxprice=220 200 in 47ms (next.js: 1.8ms, application-code: 46ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:37.026Z',
+  timestamp: '2026-09-18T00:52:49.045Z',
   destination: 'Vienna',
   checkIn: '2025-12-02',
   checkOut: '2025-12-06',
@@ -224,10 +224,10 @@ https://nextjs.org/telemetry
   guests: 3,
   rooms: 2
 }
- GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 607ms (next.js: 1.9ms, application-code: 605ms)
- GET /?dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1 200 in 33ms (next.js: 3ms, application-code: 29ms)
+ GET /api/search?destination=Vienna&checkIn=2025-12-02&checkOut=2025-12-06&priceCapPerNight=220&guests=3&rooms=2 200 in 608ms (next.js: 2.0ms, application-code: 606ms)
+ GET /?dest=Amsterdam&checkin=2025-02-06&checkout=2025-02-09&guests=2&rooms=1 200 in 25ms (next.js: 2ms, application-code: 23ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:38.306Z',
+  timestamp: '2026-09-18T00:52:50.340Z',
   destination: 'Amsterdam',
   checkIn: '2025-02-06',
   checkOut: '2025-02-09',
@@ -235,10 +235,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Amsterdam&checkIn=2025-02-06&checkOut=2025-02-09&priceCapPerNight=1000&guests=2&rooms=1 200 in 606ms (next.js: 1.8ms, application-code: 604ms)
- GET /?dest=Barcelona&checkin_monthday=22&checkin_month=2&checkin_year=2025&adults=3&rooms=1&price_max=180&sortBy=review_score_desc 200 in 28ms (next.js: 2ms, application-code: 26ms)
+ GET /api/search?destination=Amsterdam&checkIn=2025-02-06&checkOut=2025-02-09&priceCapPerNight=1000&guests=2&rooms=1 200 in 607ms (next.js: 2.0ms, application-code: 605ms)
+ GET /?dest=Barcelona&checkin_monthday=22&checkin_month=2&checkin_year=2025&adults=3&rooms=1&price_max=180&sortBy=review_score_desc 200 in 25ms (next.js: 1.8ms, application-code: 23ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:39.543Z',
+  timestamp: '2026-09-18T00:52:51.563Z',
   destination: 'Barcelona',
   checkIn: '2025-02-22',
   checkOut: '2025-02-23',
@@ -246,10 +246,10 @@ https://nextjs.org/telemetry
   guests: 3,
   rooms: 1
 }
- GET /api/search?destination=Barcelona&checkIn=2025-02-22&checkOut=2025-02-23&priceCapPerNight=180&guests=3&rooms=1 200 in 607ms (next.js: 4ms, application-code: 603ms)
- GET /?aid=304142&label=gog235jc&utm_source=imessage 200 in 26ms (next.js: 1.8ms, application-code: 24ms)
+ GET /api/search?destination=Barcelona&checkIn=2025-02-22&checkOut=2025-02-23&priceCapPerNight=180&guests=3&rooms=1 200 in 605ms (next.js: 2.0ms, application-code: 604ms)
+ GET /?aid=304142&label=gog235jc&utm_source=imessage 200 in 24ms (next.js: 2ms, application-code: 22ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:40.772Z',
+  timestamp: '2026-09-18T00:52:52.804Z',
   destination: 'anywhere',
   checkIn: '2025-01-01',
   checkOut: '2025-01-02',
@@ -257,10 +257,10 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=anywhere&checkIn=2025-01-01&checkOut=2025-01-02&priceCapPerNight=1000&guests=2&rooms=1 200 in 606ms (next.js: 2ms, application-code: 604ms)
- GET /?ss=Palma&checkin=2025-06-14&checkout=2025-06-21&group_adults=4&no_rooms=2&maxPrice=9999999 200 in 31ms (next.js: 1.8ms, application-code: 29ms)
+ GET /api/search?destination=anywhere&checkIn=2025-01-01&checkOut=2025-01-02&priceCapPerNight=1000&guests=2&rooms=1 200 in 607ms (next.js: 1.9ms, application-code: 605ms)
+ GET /?ss=Palma&checkin=2025-06-14&checkout=2025-06-21&group_adults=4&no_rooms=2&maxPrice=9999999 200 in 27ms (next.js: 1.8ms, application-code: 25ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:42.010Z',
+  timestamp: '2026-09-18T00:52:54.023Z',
   destination: 'Palma',
   checkIn: '2025-06-14',
   checkOut: '2025-06-21',
@@ -269,9 +269,9 @@ https://nextjs.org/telemetry
   rooms: 2
 }
  GET /api/search?destination=Palma&checkIn=2025-06-14&checkOut=2025-06-21&priceCapPerNight=1000&guests=4&rooms=2 200 in 607ms (next.js: 2ms, application-code: 605ms)
- GET /?ss=Naples&checkin=2024-13-45&checkout=2025-09-1&adults=abc&nflt=zz_unknown_code%3D7 200 in 29ms (next.js: 1.9ms, application-code: 27ms)
+ GET /?ss=Naples&checkin=2024-13-45&checkout=2025-09-1&adults=abc&nflt=zz_unknown_code%3D7 200 in 26ms (next.js: 3ms, application-code: 23ms)
 [accommodation-search] {
-  timestamp: '2026-09-18T00:40:43.235Z',
+  timestamp: '2026-09-18T00:52:55.241Z',
   destination: 'Naples',
   checkIn: '2025-08-31',
   checkOut: '2025-09-01',
@@ -279,4 +279,4 @@ https://nextjs.org/telemetry
   guests: 2,
   rooms: 1
 }
- GET /api/search?destination=Naples&checkIn=2025-08-31&checkOut=2025-09-01&priceCapPerNight=1000&guests=2&rooms=1 200 in 605ms (next.js: 2.0ms, application-code: 603ms)
+ GET /api/search?destination=Naples&checkIn=2025-08-31&checkOut=2025-09-01&priceCapPerNight=1000&guests=2&rooms=1 200 in 605ms (next.js: 1.6ms, application-code: 604ms)
