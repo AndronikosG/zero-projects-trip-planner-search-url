@@ -28,7 +28,13 @@ function watchSearchRequests(page) {
 }
 
 async function waitForResults(page) {
-  await page.locator("article").first().waitFor({ state: "visible", timeout: 15_000 });
+  try {
+    await page.locator("article").first().waitFor({ state: "visible", timeout: 15_000 });
+  } catch (error) {
+    console.error("[BROWSER_DIAGNOSTIC] URL:", page.url());
+    console.error("[BROWSER_DIAGNOSTIC] body:", (await page.locator("body").innerText()).slice(0, 4000));
+    throw error;
+  }
 }
 
 async function controls(page) {
@@ -110,6 +116,10 @@ try {
   {
     const context = await browser.newContext({ viewport: { width: 1440, height: 1050 } });
     const page = await context.newPage();
+    page.on("pageerror", (error) => console.error("[PAGE_ERROR]", error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") console.error("[BROWSER_CONSOLE]", message.text());
+    });
     const requests = watchSearchRequests(page);
     const url =
       baseURL +
