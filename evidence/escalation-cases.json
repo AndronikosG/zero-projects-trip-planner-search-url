@@ -1,0 +1,188 @@
+[
+  {
+    "group": "Shared-link state lost before the app",
+    "ticket": "SL-40218",
+    "sender": "/trip-planner?dest=lisbon&checkin=2024-06-12&checkout=2024-06-16&maxprice=140",
+    "complaint": "Chat app truncated the query string, so the recipient received no search state.",
+    "mode": "truncated-link",
+    "recipient": "/trip-planner"
+  },
+  {
+    "group": "Result-set fidelity mismatch",
+    "ticket": "SL-40255",
+    "sender": "/trip-planner?dest=barcelona&checkin=2024-05-20&checkout=2024-05-23&maxprice=110",
+    "complaint": "Same filters opened but recipient results differed and duplicate requests fired.",
+    "mode": "fidelity"
+  },
+  {
+    "group": "Redundant fetch on repeat navigation",
+    "ticket": "SL-40301",
+    "sender": "/trip-planner?dest=rome&checkin=2024-07-01&checkout=2024-07-08&maxprice=200",
+    "complaint": "Re-applying the same price state fired a fresh request.",
+    "mode": "repeat-price",
+    "altPrice": "190"
+  },
+  {
+    "group": "Invalid checkout relationship",
+    "ticket": "SL-40388",
+    "sender": "/trip-planner?dest=amsterdam&checkin=2024-06-30&checkout=2024-06-28&maxprice=160",
+    "complaint": "Checkout was earlier than check-in and results blanked.",
+    "mode": "cold"
+  },
+  {
+    "group": "Price validation / bounds",
+    "ticket": "SL-40412",
+    "sender": "/trip-planner?dest=paris&checkin=2024-06-10&checkout=2024-06-14&maxprice=abc",
+    "complaint": "Non-numeric maxprice crashed the page.",
+    "mode": "cold"
+  },
+  {
+    "group": "Legacy parameter compatibility",
+    "ticket": "SL-40470",
+    "sender": "/trip-planner?city=vienna&checkin=2024-08-01&checkout=2024-08-05&maxprice=130",
+    "complaint": "Legacy city key was ignored.",
+    "mode": "cold"
+  },
+  {
+    "group": "Legacy parameter compatibility",
+    "ticket": "SL-40533",
+    "sender": "/trip-planner?dest=prague&checkin=2024-09-02&checkout=2024-09-06&budget=150",
+    "complaint": "Legacy budget key was ignored.",
+    "mode": "cold"
+  },
+  {
+    "group": "Missing / malformed dates",
+    "ticket": "SL-40601",
+    "sender": "/trip-planner?dest=berlin&checkin=&checkout=2024-07-10&maxprice=120",
+    "complaint": "Empty check-in caused an endless spinner.",
+    "mode": "cold"
+  },
+  {
+    "group": "Browser back state loss",
+    "ticket": "SL-40677",
+    "sender": "/trip-planner?dest=madrid&checkin=2024-06-05&checkout=2024-06-09&maxprice=95",
+    "complaint": "Browser Back reset filters and re-ran search.",
+    "mode": "back",
+    "altPrice": "105"
+  },
+  {
+    "group": "Empty result handling",
+    "ticket": "SL-40742",
+    "sender": "/trip-planner?dest=oslo&checkin=2024-08-15&checkout=2024-08-18&maxprice=250",
+    "complaint": "Zero matching stays rendered a raw error instead of an empty state.",
+    "mode": "empty"
+  },
+  {
+    "group": "Redundant fetch on repeat navigation",
+    "ticket": "SL-40810",
+    "sender": "/trip-planner?dest=copenhagen&checkin=2024-07-20&checkout=2024-07-24&maxprice=180",
+    "complaint": "Price was toggled away and back, causing fresh searches.",
+    "mode": "repeat-price",
+    "altPrice": "190"
+  },
+  {
+    "group": "Price validation / bounds",
+    "ticket": "SL-40889",
+    "sender": "/trip-planner?dest=dublin&checkin=2024-09-10&checkout=2024-09-13&maxprice=-50",
+    "complaint": "Negative maxprice returned no results without explanation.",
+    "mode": "cold"
+  },
+  {
+    "group": "Missing / malformed dates",
+    "ticket": "SL-40945",
+    "sender": "/trip-planner?dest=nice&checkin=2024-13-40&checkout=2024-07-05&maxprice=140",
+    "complaint": "Impossible check-in crashed date parsing.",
+    "mode": "cold"
+  },
+  {
+    "group": "Unknown parameter isolation",
+    "ticket": "SL-41022",
+    "sender": "/trip-planner?dest=porto&checkin=2024-08-08&checkout=2024-08-12&maxprice=125&sort=cheapest",
+    "complaint": "Unknown sort param contaminated validation.",
+    "mode": "cold"
+  },
+  {
+    "group": "Result-set fidelity mismatch",
+    "ticket": "SL-41090",
+    "sender": "/trip-planner?dest=milan&checkin=2024-09-01&checkout=2024-09-04&maxprice=170",
+    "complaint": "Recipient result set differed because cache identity did not use full search state.",
+    "mode": "fidelity"
+  },
+  {
+    "group": "Missing / malformed dates",
+    "ticket": "SL-41156",
+    "sender": "/trip-planner?dest=split&checkin=2024-08-22&maxprice=145",
+    "complaint": "Missing checkout left results loading forever.",
+    "mode": "cold"
+  },
+  {
+    "group": "Price validation / bounds",
+    "ticket": "SL-41221",
+    "sender": "/trip-planner?dest=seville&checkin=2024-09-05&checkout=2024-09-08&maxprice=99999",
+    "complaint": "Price above the valid maximum bypassed the cap.",
+    "mode": "cold"
+  },
+  {
+    "group": "Legacy parameter compatibility",
+    "ticket": "SL-41288",
+    "sender": "/trip-planner?destination=krakow&checkin=2024-08-30&checkout=2024-09-02&maxprice=115",
+    "complaint": "Verbose destination alias was ignored.",
+    "mode": "cold"
+  },
+  {
+    "group": "Redundant fetch on repeat navigation",
+    "ticket": "SL-41355",
+    "sender": "/trip-planner?dest=hamburg&checkin=2024-09-12&checkout=2024-09-15&maxprice=155",
+    "complaint": "Clearing then restoring the same filter combination re-hit the API.",
+    "mode": "repeat-clear"
+  },
+  {
+    "group": "Invalid checkout relationship",
+    "ticket": "SL-41419",
+    "sender": "/trip-planner?dest=venice&checkin=2024-08-25&checkout=2024-08-25&maxprice=210",
+    "complaint": "Same-day check-in/out produced no guidance.",
+    "mode": "cold"
+  },
+  {
+    "group": "Blank destination",
+    "ticket": "SL-41487",
+    "sender": "/trip-planner?dest=%20&checkin=2024-09-20&checkout=2024-09-23&maxprice=130",
+    "complaint": "Whitespace-only destination failed silently.",
+    "mode": "cold"
+  },
+  {
+    "group": "Result-set fidelity mismatch",
+    "ticket": "SL-41552",
+    "sender": "/trip-planner?dest=zurich&checkin=2024-09-18&checkout=2024-09-21&maxprice=190",
+    "complaint": "Recipient list rendered in a different order.",
+    "mode": "fidelity"
+  },
+  {
+    "group": "Redundant fetch on repeat navigation",
+    "ticket": "SL-41618",
+    "sender": "/trip-planner?dest=athens&checkin=2024-09-25&checkout=2024-09-29&maxprice=135",
+    "complaint": "Rapid toggling repeated requests for states already fetched.",
+    "mode": "rapid-repeat"
+  },
+  {
+    "group": "Missing / malformed dates",
+    "ticket": "SL-41684",
+    "sender": "/trip-planner?dest=valencia&checkin=25-09-2024&checkout=28-09-2024&maxprice=105",
+    "complaint": "DD-MM-YYYY dates caused parsing failure.",
+    "mode": "cold"
+  },
+  {
+    "group": "Unknown parameter isolation",
+    "ticket": "SL-41750",
+    "sender": "/trip-planner?dest=bruges&checkin=2024-09-28&checkout=2024-10-01&maxprice=120&currency=GBP",
+    "complaint": "Unknown currency param broke validation.",
+    "mode": "cold"
+  },
+  {
+    "group": "Price validation / bounds",
+    "ticket": "SL-41815",
+    "sender": "/trip-planner?dest=faro&checkin=2024-10-05&checkout=2024-10-09&maxprice=",
+    "complaint": "Empty maxprice became zero and removed all results.",
+    "mode": "cold"
+  }
+]
