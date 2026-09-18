@@ -40,11 +40,19 @@ jobs:
             if curl -fsS http://127.0.0.1:3000 >/dev/null; then break; fi
             sleep 1
           done
+          set +e
           EVIDENCE_RUN=first-pass node scripts/browser-acceptance.mjs
-          cp first-pass-server.log evidence/search-url/first-pass/server.log
+          ACCEPTANCE_STATUS=$?
+          set -e
+          echo "----- first-pass-server.log -----"
+          cat first-pass-server.log
+          if [ -d evidence/search-url/first-pass ]; then
+            cp first-pass-server.log evidence/search-url/first-pass/server.log
+          fi
           kill $SERVER_PID || true
           wait $SERVER_PID 2>/dev/null || true
           trap - EXIT
+          exit $ACCEPTANCE_STATUS
 
       - name: Run browser acceptance — final rerun
         shell: bash
