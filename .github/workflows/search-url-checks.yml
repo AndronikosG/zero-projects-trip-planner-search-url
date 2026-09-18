@@ -30,42 +30,46 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Run browser acceptance — first pass
+      - name: Run browser acceptance passes with one captured server
         shell: bash
         run: |
-          npm run dev > first-pass-server.log 2>&1 &
+          npm run dev > acceptance-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
-          for i in {1..60}; do
-            if curl -fsS http://localhost:3000 >/dev/null; then break; fi
-            sleep 1
-          done
-          set +e
-          EVIDENCE_RUN=first-pass node scripts/browser-acceptance.mjs
-          ACCEPTANCE_STATUS=$?
-          set -e
-          echo "----- first-pass-server.log -----"
-          cat first-pass-server.log
-          if [ -d evidence/search-url/first-pass ]; then
-            cp first-pass-server.log evidence/search-url/first-pass/server.log
-          fi
-          kill $SERVER_PID || true
-          wait $SERVER_PID 2>/dev/null || true
-          trap - EXIT
-          exit $ACCEPTANCE_STATUS
 
-      - name: Run browser acceptance — final rerun
-        shell: bash
-        run: |
-          npm run dev > final-server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
           for i in {1..60}; do
-            if curl -fsS http://localhost:3000 >/dev/null; then break; fi
+            if curl -fsS http://localhost:3000 >/dev/null; then
+              READY=1
+              break
+            fi
             sleep 1
           done
+
+          if [ "${READY:-0}" != "1" ]; then
+            echo "Next.js dev server did not become ready."
+            cat acceptance-server.log
+            exit 1
+          fi
+
+          EVIDENCE_RUN=first-pass node scripts/browser-acceptance.mjs
           EVIDENCE_RUN=final node scripts/browser-acceptance.mjs
-          cp final-server.log evidence/search-url/final/server.log
+
+          # Give stdout a moment to flush before snapshotting the actual serving process log.
+          sleep 1
+
+          mkdir -p evidence/search-url/first-pass evidence/search-url/final
+          cp acceptance-server.log evidence/search-url/first-pass/server.log
+          cp acceptance-server.log evidence/search-url/final/server.log
+
+          echo "----- captured /api/search route output -----"
+          grep -n -A 9 "\[accommodation-search\]" acceptance-server.log || true
+
+          if ! grep -q "\[accommodation-search\]" acceptance-server.log; then
+            echo "Expected route-handler output was not captured in acceptance-server.log"
+            cat acceptance-server.log
+            exit 1
+          fi
+
           kill $SERVER_PID || true
           wait $SERVER_PID 2>/dev/null || true
           trap - EXIT
@@ -92,9 +96,17 @@ jobs:
 
           **Fix:** changed the browser base URL and readiness probe to `http://localhost:3000`, matching the Next.js dev origin.
 
+          ## Failure 3 — committed server.log came from the wrong process
+
+          The previous final `server.log` was produced by a second `next dev` launch after the first acceptance server had not fully exited. That second launch only logged the lock/startup error, while the browser was still being served by the first process.
+
+          **Cause:** the two acceptance passes started separate dev-server processes, so the file copied for the final pass was not guaranteed to belong to the process that actually handled the requests.
+
+          **Fix:** both acceptance passes now run against one shared Next.js process. Its stdout is captured once to `acceptance-server.log`, copied into both evidence folders, and CI fails if that file does not contain `[accommodation-search]` route-handler lines.
+
           ## Re-run evidence
 
-          `ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first complete browser pass after both fixes. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same matrix. Every row includes the exact `/api/search` request count and a screenshot.
+          `ACCEPTANCE_EVIDENCE_FIRST_PASS.md` and `evidence/search-url/first-pass/` contain the first complete browser pass after the fixes. `ACCEPTANCE_EVIDENCE.md` and `evidence/search-url/final/` contain a clean rerun of the same matrix. Every row includes the exact `/api/search` request count and a screenshot, and the committed `server.log` now contains the raw route-handler output from the process that actually served both runs.
           EOF
 
       - name: Commit acceptance record and screenshots
